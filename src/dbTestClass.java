@@ -22,7 +22,6 @@ public class dbTestClass {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
                 // Retrieve other columns as needed
-
                 // Process the data, for example, print it
                 System.out.println("ID: " + id + ", Name: " + name);
             }

@@ -11,46 +11,41 @@ public class Address_Updater{
     public static boolean val=false;
     public static int size;
     public static Address add;
-    public static void addAddress(Address address){
-                // Regular expression pattern to allow only commas and hyphens
-                String regex = "^[,-]+$";
-                String alphaRegex = "^[a-zA-Z]+$";
+    public static boolean addAddress(Address address){
+                // Regular expression pattern to only allow certain values for certain fields
+                String regex = "^[a-zA-Z0-9,-]+$"; //RegEx for street address
+                String alphaRegex = "^[a-zA-Z]+$"; //RegEx for State and City
+                String numRegex = "^[0-9]+$"; // //RegEx for Pincode
                 Pattern pattern = Pattern.compile(regex);
                 Pattern pattern2 = Pattern.compile(alphaRegex);
+                Pattern pattern3 = Pattern.compile(numRegex);
                 Matcher matcher = pattern.matcher(address.getStreetAddress());
                 Matcher matcher2 = pattern2.matcher(address.getState());
                 Matcher matcher3 = pattern2.matcher(address.getCity());
-        System.out.println(matcher.matches()+""+matcher2.matches()+""+matcher2.matches()+""+matcher3.matches());
+                Matcher matcher4=pattern3.matcher(Integer.toString(address.getZipCode()));
+        System.out.println(matcher.matches()+" "+matcher2.matches()+" "+matcher3.matches()+" "+matcher4.matches());
                 // Check if the input string matches the pattern
-        System.out.println((val = matcher.matches()) +"\n");
-        DB.addDB(address);
+        System.out.println("\n"+(val) );
+       return val = matcher.matches()&&matcher2.matches()&&matcher3.matches()&&matcher4.matches();
     }
+    //Method to retrieve addresses matching a criteria
     public static void getAllAddresses(ResultSet rs) {
-        Object[] obj = new Object[6];
-        int i=0;
+        //
         try {
-            while (DB.rs.next()) {
-                AddressUpdaterGUI.rowData1 = new Object[]{rs.getInt("Id"), rs.getString("Name"), rs.getString("Street"),
-                        rs.getString("City"), rs.getString("State"),rs.getInt("zipcode")};
-                        AddressUpdaterGUI.updateAddressArea();
+            if(!DB.rs.next()){
+                JOptionPane.showMessageDialog(null,"User doesn't exist");
             }
+            else {
+                rs.beforeFirst();
+                while (DB.rs.next()) {
+                    AddressUpdaterGUI.rowData1 = new Object[]{rs.getInt("Id"), rs.getString("Name"), rs.getString("Street"),
+                            rs.getString("City"), rs.getString("State"), rs.getInt("zipcode")};
+                    AddressUpdaterGUI.updateAddressArea();
+                }
+           }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-    }
-}
-class AddressManager extends Address_Updater {
-    public static List<Address> addresses;
-
-    // Constructor
-    public AddressManager() {
-        addresses = new ArrayList<>();
-    }
-    public static void addToAddressManager(Address add){
-        addresses.add(add);
-    }
-    public static List<Address> getAddresses() {
-        return addresses;
     }
 }
 class Address {
@@ -61,14 +56,16 @@ class Address {
     private int zipCode;
     public String Name;
 
-    // Constructor
-    public Address(String streetAddress, String city, String state, int zipCode) {
+    // Constructors
+    public Address(String Name,String streetAddress, String city, String state, int zipCode) {
+        this.Name=Name;
         this.streetAddress = streetAddress;
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
     }
-    public Address(String Name,String streetAddress, String city, String state, int zipCode) {
+    public Address(int id ,String Name,String streetAddress, String city, String state, int zipCode) {
+        this.Id=Id;
         this.Name=Name;
         this.streetAddress = streetAddress;
         this.city = city;
