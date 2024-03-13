@@ -39,13 +39,15 @@ public class DB {
                 ex.printStackTrace();
             }
         }
-    public static void viewAddress(String Name){
+    public static void
+    viewAddress(String Name){
         try {
             Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
             System.out.println("connection Successful");
             Statement view = connection.createStatement();
             rs= view.executeQuery("select * from address where name='"+Name+"'");
-//            connection.close();
+            Address_Updater.getAllAddresses(rs);
+          connection.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

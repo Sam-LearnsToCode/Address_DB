@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,11 +16,19 @@ public class AddressUpdaterGUI extends JFrame {
     private JTextArea addressArea;
      static String viewName="";
     static Address address;
+    static Object[] rowData1 ={"","","","","",""};
+    static Object[] rowData2 ={"asd","das","sad","das","sad","das"};
+
+    public static JTable table;
+    public static DefaultTableModel model =new DefaultTableModel();
     AddressManager addMan = new AddressManager();
+    public static void setTableModelData() {
+        // Modify the model here
+        model.addRow(new Object[]{"1", "John", "Doe"});
+    }
 
     public AddressUpdaterGUI() {
         super("Address Updater");
-
 //       addressManager = new AddressManager();
 
         // Create components
@@ -27,8 +37,8 @@ public class AddressUpdaterGUI extends JFrame {
         cityField = new JTextField(20);
         stateField = new JTextField(20);
         zipCodeField = new JTextField(10);
-        addressArea = new JTextArea(10, 30);
-        addressArea.setEditable(false);
+//        addressArea = new JTextArea(10, 30);
+//        addressArea.setEditable(false);
         JButton addButton = new JButton("Add");
         JButton editButton = new JButton("Edit");
         JButton deleteButton = new JButton("Delete");
@@ -57,10 +67,21 @@ public class AddressUpdaterGUI extends JFrame {
         buttonPanel.add(clear);
         buttonPanel.add(view);
 
+        String[] colHeadings = {"ID","Name","Street","City","State","ZipCode"};
+        model.setColumnIdentifiers(colHeadings);
+//        DefaultTableModel model = new DefaultTableModel(new Object[0][colHeadings.length], colHeadings.length) ;
+        model.setColumnIdentifiers(colHeadings);
+        JTable table = new JTable(model);
+        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+        table.setEnabled(false);
+
+
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(inputPanel, BorderLayout.NORTH);
-        mainPanel.add(new JScrollPane(addressArea), BorderLayout.CENTER);
+        mainPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+//       mainPanel.add(table.getTableHeader(), BorderLayout.EAST);
+//       mainPanel.add(new JScrollPane(addressArea), BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.EAST);
 
         // Add action listeners
@@ -71,11 +92,10 @@ public class AddressUpdaterGUI extends JFrame {
                 String street = streetField.getText();
                 String city = cityField.getText();
                 String state = stateField.getText();
-                int zipCode = Integer.parseInt(zipCodeField.getText());
-                if (!street.isEmpty() && !city.isEmpty() && !state.isEmpty() &&Address_Updater.val==true/*&& !zipCode*/) {
-                     address = new Address(name,street, city, state, zipCode);
+                String zipCode = zipCodeField.getText();
+                if (!street.isEmpty() && !city.isEmpty() && !state.isEmpty() && !zipCode.isEmpty()) {
+                     address = new Address(name,street, city, state, Integer.parseInt(zipCode));
                     Address_Updater.addAddress(address);
-                    addMan.addToAddressManager(address);
                     updateAddressArea();
                     clearFields();
                 }
@@ -89,9 +109,9 @@ public class AddressUpdaterGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 clearAddressArea();
-                viewName= JOptionPane.showInputDialog("Enter the Name to delete their Addresses");
+                viewName= JOptionPane.showInputDialog("Enter the Id to delete the Address");
                 clearAddressArea();
-                DB.deleteAddress(viewName);
+                DB.deleteAddress(Integer.parseInt(viewName));
             }
         });
         clear.addActionListener(new ActionListener() {
@@ -106,12 +126,12 @@ public class AddressUpdaterGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 clearAddressArea();
                viewName= JOptionPane.showInputDialog("Enter the Name to view their Addresses");
-                updateAddressArea(Address_Updater.getAllAddresses());
+//                updateAddressArea(Address_Updater.getAllAddresses());
                 int index= Integer.parseInt(JOptionPane.showInputDialog("Select the index to be edited"));
                 clearAddressArea();
-                updateAddressArea(Address_Updater.getAllAddresses());
+//                updateAddressArea(Address_Updater.getAllAddresses());
                 DB.deleteAddress(index);
-                updateAddressArea(Address_Updater.getAllAddresses());
+//                updateAddressArea(Address_Updater.getAllAddresses());
                 DB.updateDB(address,index);
                 Name.setText(address.getName());
                 streetField.setText(address.getStreetAddress());
@@ -124,15 +144,11 @@ public class AddressUpdaterGUI extends JFrame {
         view.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                clearAddressArea();
+//                clearAddressArea();
                 viewName= JOptionPane.showInputDialog("Enter the Name to view their Addresses");
-                updateAddressArea(Address_Updater.getAllAddresses());
                 DB.viewAddress(viewName);
-                Name.setText(address.getName());
-                streetField.setText(address.getStreetAddress());
-                cityField.setText(address.getCity());
-                stateField.setText(address.getState());
-                zipCodeField.setText(Integer.toString(address.getZipCode()));
+//                updateAddressArea();
+//                Address_Updater.getAllAddresses();
             }
         });
         // Set frame
@@ -145,15 +161,24 @@ public class AddressUpdaterGUI extends JFrame {
         setVisible(true);
     }
 
-    private void updateAddressArea() {
-        List<Address> addresses =AddressManager.getAddresses();
-        StringBuilder sb = new StringBuilder();
-        for (Address address : addresses) {
-            sb.append(address.getName()).append(": ").append(address.getStreetAddress()).append(", ").append(address.getCity())
-                    .append(", ").append(address.getState()).append(" ").append(address.getZipCode())
-                    .append("\n");
-       }
-        addressArea.setText(sb.toString());
+    protected static void updateAddressArea() {
+        model.addRow(rowData1);
+//        while (DB.rs.next()) {
+//            Object[] row = new Object[6];
+//            for (int i = 1; i <= columnCount; i++) {
+//                row[i - 1] = resultSet.getObject(i);
+//            }
+
+//        }
+
+//        List<Address> addresses =AddressManager.getAddresses();
+//        StringBuilder sb = new StringBuilder();
+//        for (Address address : addresses) {
+//            sb.append(address.getName()).append(": ").append(address.getStreetAddress()).append(", ").append(address.getCity())
+//                    .append(", ").append(address.getState()).append(" ").append(address.getZipCode())
+//                    .append("\n");
+//       }
+//        addressArea.setText(sb.toString());
     }
     private void updateAddressArea(Address address) {
        List<Address> addresses =AddressManager.getAddresses();

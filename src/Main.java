@@ -7,5 +7,6 @@ public class Main {
         SwingUtilities.invokeLater(AddressUpdaterGUI::new);
 //        System.out.println(Address_Updater.val);
 //        System.out.println(Arrays.toString(AddressManager.addresses.toArray()));
+//        SwingUtilities.invokeLater(dbTestClass::new);
     }
 }

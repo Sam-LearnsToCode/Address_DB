@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,30 +20,23 @@ public class Address_Updater{
                 Matcher matcher = pattern.matcher(address.getStreetAddress());
                 Matcher matcher2 = pattern2.matcher(address.getState());
                 Matcher matcher3 = pattern2.matcher(address.getCity());
-        System.out.println(matcher.matches()+""+matcher.matches()+""+matcher2.matches()+""+matcher3.matches());
+        System.out.println(matcher.matches()+""+matcher2.matches()+""+matcher2.matches()+""+matcher3.matches());
                 // Check if the input string matches the pattern
         System.out.println((val = matcher.matches()) +"\n");
         DB.addDB(address);
     }
-    public static Address getAllAddresses(){
-        DB.viewAddress(AddressUpdaterGUI.viewName);
+    public static void getAllAddresses(ResultSet rs) {
+        Object[] obj = new Object[6];
+        int i=0;
         try {
-            while(DB.rs.next()){
-                int i = 0;
-                while (i <=DB.rs.getFetchSize()) {
-                    Address address1=new Address(DB.rs.getString(2+i),DB.rs.getString(3+i),DB.rs.getString(4+i)
-                            ,DB.rs.getString(5+i),DB.rs.getInt(6+i));
-                    add=address1;
-                    size=DB.rs.getFetchSize();
-                    i++;
-                         return address1;
-
-                }
+            while (DB.rs.next()) {
+                AddressUpdaterGUI.rowData1 = new Object[]{rs.getInt("Id"), rs.getString("Name"), rs.getString("Street"),
+                        rs.getString("City"), rs.getString("State"),rs.getInt("zipcode")};
+                        AddressUpdaterGUI.updateAddressArea();
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return add;
     }
 }
 class AddressManager extends Address_Updater {
